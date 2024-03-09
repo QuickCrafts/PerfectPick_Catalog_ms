@@ -1,6 +1,6 @@
-# Recommendation Microservice
+# Catalog Microservice
 
-Generation and management recommendations based on past user likes.
+Generation and management of catalog of movies, books and songs.
 
 ---
 <br />
