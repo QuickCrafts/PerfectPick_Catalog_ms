@@ -7,6 +7,8 @@ Generation and management of catalog of movies, books and songs.
 
 ## API Reference
 
+### Movies
+
 #### Create movie
 
 Create new movie. Returns movie id generated.
@@ -175,6 +177,8 @@ Get movies information from [IMDB API](https://developer.imdb.com/documentation/
 | `500` | `error` | Any other error message|
 
 
+### Books
+
 #### Create book
 
 Create new book. Returns book id generated.
@@ -330,7 +334,7 @@ Get books information from [Goodreads API](https://www.goodreads.com/api) to ini
 | `201` | `success` | "Books updated."|
 | `500` | `error` | Any other error message|
 
-
+### Music
 
 #### Create song
 
