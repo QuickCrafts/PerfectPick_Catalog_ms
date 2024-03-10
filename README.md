@@ -70,7 +70,7 @@ Delete all movie information.
 
 #### Update movie
 
-Update new movie.
+Update movie.
 
 ```http
   PUT /movies/${id}
@@ -234,7 +234,7 @@ Delete all book information.
 
 #### Update book
 
-Update new book.
+Update book.
 
 ```http
   PUT /books/${id}
@@ -391,7 +391,7 @@ Delete all song information.
 
 #### Update song
 
-Update new song.
+Update song.
 
 ```http
   PUT /songs/${id}
