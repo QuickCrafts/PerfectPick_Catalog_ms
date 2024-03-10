@@ -80,8 +80,8 @@ Update movie.
 // Body interface
 interface Update_Movie{
   title?: string
-  original_title: string 
-  genre: string
+  original_title?: string 
+  genre?: string
   duration?: string
   director?: string
   release_date?: string
@@ -399,13 +399,13 @@ Update song.
 
 ```typescript
 // Body interface
-interface Update_Song{
+interface Create_Song{
   title?: string
-  author?: string
+  artist?: string
   genre?: string
-  pages?: number
+  album?: number
   year?: string
-  rating?: number
+  duration?: number
   // any other song important attribute
 }
 ```
