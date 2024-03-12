@@ -1,33 +1,27 @@
 const express = require('express');
 const cassandra = require('cassandra-driver');
+require('dotenv').config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 var moviesRoutes = require('./routes/movies.routes');
 var songsRoutes = require('./routes/songs.routes');
 var booksRoutes = require('./routes/books.routes');
-// var mediaRoutes = require('./routes/movies.routes');
+var mediaRoutes = require('./routes/media.routes');
 
 
 // Conexión a Cassandra
 const client = new cassandra.Client({
-  contactPoints: ['localhost'],
-  localDataCenter: 'datacenter1',
-  keyspace: 'perfectpick_catalog_db',
+  contactPoints: [process.env.CASSANDRA_CONTACT_POINTS],
+  localDataCenter: process.env.CASSANDRA_LOCAL_DATA_CENTER,
+  keyspace: process.env.CASSANDRA_KEYSPACE,
+  authProvider: new cassandra.auth.PlainTextAuthProvider(process.env.CASSANDRA_USERNAME, process.env.CASSANDRA_PASSWORD),
 });
 
-// Ruta de ejemplo que consulta datos de Cassandra
-app.get('/prueba', async (req, res) => {
-   paramMovie =  await client.execute("SELECT * FROM movies;")
-   paramSong =  await client.execute("SELECT * FROM songs;")
-   paramBook =  await client.execute("SELECT * FROM books;")
-   // paramMedia =  await client.execute("SELECT * FROM media;")
 
-  res.json(paramMovie.rows[0])
-  res.json(paramSong.rows[0])
-  res.json(paramBook.rows[0])
-  // res.json(paramMedia.rows[0])
+client.connect(function(err, result){
+  console.log('app: cassandra connected');
 });
 
 // Inicio del servidor
@@ -35,7 +29,8 @@ app.listen(port, () => {
   console.log(`Servidor iniciado en http://localhost:${port}`);
 });
 
+app.use(express.json());
 app.use('/movies', moviesRoutes);
 app.use('/songs', songsRoutes);
 app.use('/books', booksRoutes);
-// app.use('/media', mediaRoutes);
+app.use('/media', mediaRoutes);

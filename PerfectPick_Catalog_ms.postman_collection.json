@@ -1,0 +1,437 @@
+{
+	"info": {
+		"_postman_id": "8e280e35-2b05-42ce-8d4e-a62af53c4ff1",
+		"name": "PerfectPick_Catalog_ms",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33490332"
+	},
+	"item": [
+		{
+			"name": "Songs",
+			"item": [
+				{
+					"name": "InitializeSongs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/songs/init",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"songs",
+								"init"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllSongs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/songs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"songs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSongById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/songs/7GUhiAHLoVy1V8ucQuZ3CB",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"songs",
+								"7GUhiAHLoVy1V8ucQuZ3CB"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateSong",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_song\": \"1\",\r\n    \"album\": \"Starboy\",\r\n    \"artist\": \"The Weeknd, Daft Punk\",\r\n    \"duration\": 230,\r\n    \"genres\": null,\r\n    \"title\": \"Starboy\",\r\n    \"year\": 2016\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8001/songs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"songs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateSong",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_song\": \"1\",\r\n    \"album\": \"Starboy The Album\",\r\n    \"artist\": \"The Weeknd, Daft Punk\",\r\n    \"duration\": 230,\r\n    \"genres\": null,\r\n    \"title\": \"Starboy\",\r\n    \"year\": 2011\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8001/songs/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"songs",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteSong",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/songs/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"songs",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Movies",
+			"item": [
+				{
+					"name": "InitializeMovies",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/movies/init",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"movies",
+								"init"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllMovies",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/movies/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"movies",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMovieById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/movies/tt0106941",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"movies",
+								"tt0106941"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateMovie",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_movie\": \"1\",\r\n    \"awards\": \"3 wins & 6 nominations\",\r\n    \"cast\": \"Christopher Reeve, Gene Hackman, Margot Kidder\",\r\n    \"director\": \"Sidney J. Furie\",\r\n    \"duration\": \"90 min\",\r\n    \"episodes\": null,\r\n    \"genre\": \"Action, Adventure, Sci-Fi\",\r\n    \"original_title\": \"Superman IV: The Quest for Peace\",\r\n    \"rating\": \"3.7\",\r\n    \"release_date\": \"1987-07-24\",\r\n    \"seasons\": null,\r\n    \"title\": \"Superman IV: The Quest for Peace\",\r\n    \"writers\": \"Jerry Siegel, Joe Shuster, Christopher Reeve\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8001/movies/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"movies",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateMovie",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_movie\": \"1\",\r\n    \"awards\": \"22 wins\",\r\n    \"cast\": \"Margot Kidder\",\r\n    \"director\": \"Sidney J. Furie\",\r\n    \"duration\": \"200 min\",\r\n    \"episodes\": null,\r\n    \"genre\": \"Action, Adventure, Sci-Fi\",\r\n    \"original_title\": \"Superman IV: The Quest for Peace\",\r\n    \"rating\": \"3.7\",\r\n    \"release_date\": \"1987-07-24\",\r\n    \"seasons\": null,\r\n    \"title\": \"Superman IV: The Quest for Peace\",\r\n    \"writers\": \"Jerry Siegel, Joe Shuster, Christopher Reeve\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8001/movies/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"movies",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteMovie",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/movies/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"movies",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "InitializeBooks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/books/init",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"books",
+								"init"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllBooks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/books/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"books",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetBookById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/books/HdYj2RqeGnoC",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"books",
+								"HdYj2RqeGnoC"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBook",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_book\": \"1\",\r\n    \"author\": \"Darío Jaramillo Agudelo\",\r\n    \"genres\": \"Language Arts & Disciplines\",\r\n    \"pages\": 642,\r\n    \"rating\": null,\r\n    \"title\": \"Antología de crónica latinoamericana actual\",\r\n    \"year\": 2012\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8001/books/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"books",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateBook",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id_book\": \"1\",\r\n    \"author\": \"Don José\",\r\n    \"genres\": \"History\",\r\n    \"pages\": 1200,\r\n    \"rating\": null,\r\n    \"title\": \"Antología de crónica latinoamericana actual\",\r\n    \"year\": 2010\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8001/books/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"books",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteBook",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/books/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"books",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
