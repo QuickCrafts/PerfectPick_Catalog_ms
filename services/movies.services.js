@@ -1,9 +1,9 @@
 const cassandra = require('cassandra-driver');
 const fetch = require('node-fetch');
-const express = require('express');
 const { parse, format } = require('date-fns');
-
 require('dotenv').config();
+
+const ServerError = require("../errors/server.error");
 
 const client = new cassandra.Client({
   contactPoints: [process.env.CASSANDRA_CONTACT_POINTS],
@@ -13,7 +13,7 @@ const client = new cassandra.Client({
 });
 
 class MovieServices {
-    async initializeMovies(req, res){
+    async initializeMovies(){
       try {
         const apiKey = process.env.API_KEY_OMDB;
         const baseUrl = 'http://www.omdbapi.com/?apikey=' + apiKey;
@@ -73,78 +73,79 @@ class MovieServices {
           
             await client.execute(query, params, { prepare: true });
           }
-
-          res.status(201).send("Movies updated.");
         } else {
-          res.status(500).send(`Error trying to initialize the movies.`);
+          throw new ServerError("Error trying to initialize the movies.", 500);
         }
       } catch (error) {
-        res.status(500).send('Error trying to initialize the movies.');
+        if(error instanceof ServerError){
+          throw error;
+        }
+        throw new ServerError("Error trying to initialize the movies.", 500);
       }
     }
 
-    async getAll(req, res){
+    async getAll(){
         try{
             const result =  await client.execute("SELECT * FROM movies;")
       
             if (result.rowLength > 0) {
-              res.status(200).json(result.rows);
+              return result.rows;
             } else {
-              res.status(500).send(`There are no movies to get.`);
+              throw new ServerError("There are no movies to get.", 500);
             }
       
         }catch (error){
-            console.error(error);
-            res.status(500).send('Error trying to get the movies.');
+          if(error instanceof ServerError){
+            throw error;
+          }
+          throw new ServerError("Error trying to get the movies.", 500);
         }
     }
 
-    async getById(req, res){
+    async getById(idMovie){
         try{
-            const idMovie = req.params.id_movie;
             const result = await client.execute("SELECT * FROM movies WHERE id_movie = ?", [idMovie]);
       
             if (result.rowLength > 0) {
-              res.status(200).json(result.rows);
+              return result.rows;
             } else {
-              res.status(404).send(`Movie not found.`);
+              throw new ServerError("Movie not found.", 404);
             }
        
           }catch (error){
-            console.error(error);
-            res.status(500).send('Error trying to get the movie.');
+            if(error instanceof ServerError){
+              throw error;
+            }
+            throw new ServerError("Error trying to get the movie.", 500);
           }
     }
 
-    async createMovie(req, res){
-        try{
-            const {id_movie, awards, cast, director, duration, episodes, genre, original_title, rating, release_date, seasons, title, writers} = req.body;
-      
+    async createMovie(id_movie, awards, cast, director, duration, episodes, genre, original_title, rating, release_date, seasons, title, writers){
+        try{      
             const result = await client.execute(
               "INSERT INTO movies (id_movie, awards, cast, director, duration, episodes, genre, original_title, rating, release_date, seasons, title, writers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
               [id_movie, awards, cast, director, duration, episodes, genre, original_title, rating, release_date, seasons, title, writers], { prepare: true }
             );
       
             if (result.info.queriedHost) {
-              res.status(201).send(`id: ${id_movie}`);
+              return result;
             } else {
-              res.status(400).send('Guard failed.');
+              throw new ServerError("Guard failed.", 400);
             }
           }catch (error) {
-            console.error(error);
-            res.status(500).send('Error trying to create the movie.');
+            if(error instanceof ServerError){
+              throw error;
+            }
+            throw new ServerError("Error trying to create the movie.", 500);
         }
     }
     
-    async updateMovie(req, res){
+    async updateMovie(idMovie, awards, cast, director, duration, episodes, genre, original_title, rating, release_date, seasons, title, writers){
         try{
-            const idMovie = req.params.id_movie;
-            const {awards, cast, director, duration, episodes, genre, original_title, rating, release_date, seasons, title, writers} = req.body;
-
             const resultId = await client.execute("SELECT id_movie FROM movies WHERE id_movie = ?", [idMovie]);
         
             if (resultId.rowLength == 0) {
-                return res.status(404).send(`Movie not found.`);
+              throw new ServerError("Movie not found.", 404);
             }
             
             let updateQuery = "UPDATE movies SET";
@@ -206,41 +207,39 @@ class MovieServices {
             const result = await client.execute(updateQuery, updateValues, { prepare: true });
       
             if (result.info.queriedHost) {
-              res.status(201).send(`Movie updated.`);
+              return result;
             } else {
-              res.status(400).send(`Guard failed.`);
+              throw new ServerError("Guard failed.", 400);
             }
         } catch (error) {
-            console.error(error);
-            res.status(500).send('Error trying to update the movie.');
+          if(error instanceof ServerError){
+            throw error;
+          }
+          throw new ServerError("Error trying to update the movie.", 500);
         }
     }
 
-    async deleteMovie(req, res){
+    async deleteMovie(idMovie){
         try{
-            const idMovie = req.params.id_movie;
-
             const resultId = await client.execute("SELECT id_movie FROM movies WHERE id_movie = ?", [idMovie]);
         
             if (resultId.rowLength == 0) {
-                return res.status(404).send(`Movie not found.`);
+                throw new ServerError("Movie not found.", 404);
             }
 
             const result = await client.execute("DELETE FROM movies WHERE id_movie = ?", [idMovie]);
         
             if (result.info.queriedHost) {
-                res.status(204).send();
+                return result;
             } else {
-                res.status(404).send(`Guard failed.`);
+              throw new ServerError("Guard failed.", 400);
             }
-        }catch (error) {
-            console.error(error);
-            res.status(500).send('Error trying to delete the movie.');
+        } catch (error) {
+          if(error instanceof ServerError){
+            throw error;
+          }
+          throw new ServerError("Error trying to delete the movie.", 500);
         }
-    }
-
-    async idError(req, res){
-        res.status(400).send("Id not provided.");
     }
 }
 module.exports = new MovieServices();

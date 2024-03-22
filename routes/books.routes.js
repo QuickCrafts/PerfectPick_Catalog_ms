@@ -1,24 +1,16 @@
-const cassandra = require('cassandra-driver');
-
 var express = require('express'),
-    router = express.Router({strict:true});
+    router = express.Router();
 
-const bookServices = require("../services/books.services")
+const bookControllers = require('../controllers/books.controllers');
+const asyncErrorMiddleware = require('../middlewares/asyncError.middleware');
 
-const client = new cassandra.Client({
-  contactPoints: [process.env.CASSANDRA_CONTACT_POINTS],
-  localDataCenter: process.env.CASSANDRA_LOCAL_DATA_CENTER,
-  keyspace: process.env.CASSANDRA_KEYSPACE,
-  authProvider: new cassandra.auth.PlainTextAuthProvider(process.env.CASSANDRA_USERNAME, process.env.CASSANDRA_PASSWORD),
-});
-
-router.get("/init", bookServices.initializeBooks);
-router.get("/", bookServices.getAll);
-router.get("/:id_book", bookServices.getById);
-router.post("/", bookServices.createBook);
-router.put("/:id_book", bookServices.updateBook);
-router.put("/", bookServices.idError);
-router.delete("/:id_book", bookServices.deleteBook);
-router.delete("/", bookServices.idError);
+router.route("/init").get(asyncErrorMiddleware(bookControllers.initializeBooks));
+router.route('/').get(asyncErrorMiddleware(bookControllers.getAllBooks));
+router.route("/:id_book").get(asyncErrorMiddleware(bookControllers.getById));
+router.route("/").post(asyncErrorMiddleware(bookControllers.createBook));
+router.route("/:id_book").put(asyncErrorMiddleware(bookControllers.updateBook));
+router.route("/").put(asyncErrorMiddleware(bookControllers.idError));
+router.route("/:id_book").delete(asyncErrorMiddleware(bookControllers.deleteBook));
+router.route("/").delete(asyncErrorMiddleware(bookControllers.idError));
 
 module.exports = router;

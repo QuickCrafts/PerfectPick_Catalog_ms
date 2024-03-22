@@ -1,5 +1,8 @@
 const cassandra = require('cassandra-driver');
 const axios = require('axios');
+require('dotenv').config();
+
+const ServerError = require("../errors/server.error");
 
 const client = new cassandra.Client({
   contactPoints: [process.env.CASSANDRA_CONTACT_POINTS],
@@ -9,7 +12,7 @@ const client = new cassandra.Client({
 });
 
 class BookServices {
-  async initializeBooks(req, res){
+  async initializeBooks(){
     const apiKey = process.env.API_KEY_GOOGLE_BOOKS;
     try {
       const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=cronica&maxResults=40&key=${apiKey}`);
@@ -31,74 +34,76 @@ class BookServices {
       
         await client.execute(query, params, { prepare: true });
       }
-      res.status(201).send("Books updated.");
 
     } catch (error) {
-      res.status(500).send('Error trying to get the books.');
+      console.error(error);
+      throw new ServerError("Error trying to initialize the books.", 500);
     }
   }
-  async getAll(req, res){
+
+  async getAll(){
     try{
       const result =  await client.execute("SELECT * FROM books;")
 
       if (result.rowLength > 0) {
-        res.status(200).json(result.rows);
+        return result.rows;
       } else {
-        res.status(500).send(`There are no books to get.`);
+        throw new ServerError("There are no books to get.", 500);
       }
 
     }catch (error){
-      console.error(error);
-      res.status(500).send('Error trying to get the books.');
+      if(error instanceof ServerError){
+        throw error;
+      }
+      throw new ServerError("Error trying to get the books.", 500);
     }
   }
   
-  async getById(req, res){
+  async getById(idBook){
     try{
-      const idBook = req.params.id_book;
       const result = await client.execute("SELECT * FROM books WHERE id_book = ?", [idBook]);
       
       if (result.rowLength > 0) {
-        res.status(200).json(result.rows);
+        return result.rows;
       } else {
-        res.status(404).send(`Book not found.`);
+        throw new ServerError("Book not found.", 404);
       }
   
     }catch (error){
-      console.error(error);
-      res.status(500).send('Error trying to get the book.');
+      if(error instanceof ServerError){
+        throw error;
+      }
+      throw new ServerError("Error trying to get the books.", 500);
     }
   }
 
-  async createBook(req, res){
+  async createBook(id_book, author, genres, pages, rating, title, year){
     try{
-      const {id_book, author, genres, pages, rating, title, year} = req.body;
-
       const result = await client.execute(
         "INSERT INTO books (id_book, author, genres, pages, rating, title, year) VALUES (?, ?, ?, ?, ?, ?, ?)",
         [id_book, author, genres, pages, rating, title, year], { prepare: true }
       );
 
       if (result.info.queriedHost) {
-        res.status(201).send(`id: ${id_book}`);
+        return result;
       } else {
-        res.status(400).send('Guard failed.');
+        throw new ServerError("Guard failed.", 400);
       }
     }catch (error) {
+      if(error instanceof ServerError){
+        throw error;
+      }
       console.error(error);
-      res.status(500).send('Error trying to create the book.');
+      throw new ServerError("Error trying to create the book.", 500);
     }
   }
 
-  async updateBook(req, res){
+  async updateBook(idBook, author, genres, pages, rating, title, year){
     try{
-      const idBook = req.params.id_book;
-      const {author, genres, pages, rating, title, year} = req.body;
-
       const resultId = await client.execute("SELECT id_book FROM books WHERE id_book = ?", [idBook]);
         
       if (resultId.rowLength == 0) {
-        return res.status(404).send(`Book not found.`);
+        throw new ServerError("Book not found.", 404);
       }
 
       let updateQuery = "UPDATE books SET";
@@ -136,41 +141,37 @@ class BookServices {
       const result = await client.execute(updateQuery, updateValues, { prepare: true });
 
       if (result.info.queriedHost) {
-        res.status(201).send(`Book updated.`);
+        return result;
       } else {
-        res.status(400).send(`Guard failed`);
+        throw new ServerError("Guard failed.", 400);
       }
     }catch(error){
-      console.error(error);
-      res.status(500).send('Error trying to update the book.');
+      if(error instanceof ServerError){
+        throw error;
+      }
+      throw new ServerError("Error trying to update the book.", 500);
     }
   }
 
-  async deleteBook(req, res){
+  async deleteBook(idBook){
     try{
-      const idBook = req.params.id_book;
-
       const resultId = await client.execute("SELECT id_book FROM books WHERE id_book = ?", [idBook]);
         
       if (resultId.rowLength == 0) {
-        return res.status(404).send(`Book not found.`);
+        throw new ServerError("Book not found.", 404);
       }
 
       const result = await client.execute("DELETE FROM books WHERE id_book = ?", [idBook]);
 
       if (result.info.queriedHost) {
-        res.status(204).send();
+        return result;
       } else {
-        res.status(400).send(`Guard failed`);
+        throw new ServerError("Guard failed.", 400);
       }
     }catch (error) {
       console.error(error);
-      res.status(500).send('Error trying to delete the book.');
+      throw new ServerError("Error trying to delete the book.", 500);
     }
-  }
-
-  async idError(req, res){
-    res.status(400).send("Id not provided.");
   }
 }
 module.exports = new BookServices();

@@ -1,24 +1,16 @@
-const cassandra = require('cassandra-driver');
-
 var express = require('express'),
     router = express.Router();
 
-const songServices = require("../services/songs.services")
+const songControllers = require('../controllers/songs.controllers');
+const asyncErrorMiddleware = require('../middlewares/asyncError.middleware');
 
-const client = new cassandra.Client({
-  contactPoints: [process.env.CASSANDRA_CONTACT_POINTS],
-  localDataCenter: process.env.CASSANDRA_LOCAL_DATA_CENTER,
-  keyspace: process.env.CASSANDRA_KEYSPACE,
-  authProvider: new cassandra.auth.PlainTextAuthProvider(process.env.CASSANDRA_USERNAME, process.env.CASSANDRA_PASSWORD),
-});
-
-router.get("/init", songServices.initializeSongs);
-router.get('/', songServices.getAll);
-router.get("/:id_song", songServices.getById);
-router.post("/", songServices.createSong);
-router.put("/:id_song", songServices.updateSong);
-router.put("/", songServices.idError);
-router.delete("/:id_song", songServices.deleteSong);
-router.delete("/", songServices.idError);
+router.route("/init").get(asyncErrorMiddleware(songControllers.initializeSongs));
+router.route('/').get(asyncErrorMiddleware(songControllers.getAllSongs));
+router.route("/:id_song").get(asyncErrorMiddleware(songControllers.getById));
+router.route("/").post(asyncErrorMiddleware(songControllers.createSong));
+router.route("/:id_song").put(asyncErrorMiddleware(songControllers.updateSong));
+router.route("/").put(asyncErrorMiddleware(songControllers.idError));
+router.route("/:id_song").delete(asyncErrorMiddleware(songControllers.deleteSong));
+router.route("/").delete(asyncErrorMiddleware(songControllers.idError));
 
 module.exports = router;

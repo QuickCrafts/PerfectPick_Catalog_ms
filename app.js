@@ -2,13 +2,14 @@ const express = require('express');
 const cassandra = require('cassandra-driver');
 require('dotenv').config();
 
+const errorMiddleware = require("./middlewares/error.middleware");
+
 const app = express();
 const port = process.env.PORT;
 
 var moviesRoutes = require('./routes/movies.routes');
 var songsRoutes = require('./routes/songs.routes');
 var booksRoutes = require('./routes/books.routes');
-var mediaRoutes = require('./routes/media.routes');
 
 
 // Conexión a Cassandra
@@ -33,4 +34,4 @@ app.use(express.json());
 app.use('/movies', moviesRoutes);
 app.use('/songs', songsRoutes);
 app.use('/books', booksRoutes);
-app.use('/media', mediaRoutes);
+app.use(errorMiddleware);

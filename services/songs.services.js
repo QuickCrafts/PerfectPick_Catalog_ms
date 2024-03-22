@@ -2,6 +2,8 @@ const cassandra = require('cassandra-driver');
 const axios = require('axios');
 require('dotenv').config();
 
+const ServerError = require("../errors/server.error");
+
 const client = new cassandra.Client({
   contactPoints: [process.env.CASSANDRA_CONTACT_POINTS],
   localDataCenter: process.env.CASSANDRA_LOCAL_DATA_CENTER,
@@ -10,7 +12,7 @@ const client = new cassandra.Client({
 });
 
   class SongServices {
-    async initializeSongs(req, res){
+    async initializeSongs(){
       const clientId = process.env.API_CLIENT_ID_SPOTIFY;
       const clientSecret = process.env.API_CLIENT_SECRET_SPOTIFY;
 
@@ -28,7 +30,7 @@ const client = new cassandra.Client({
         return response.data.access_token; 
       }
 
-      async function getTrackInfo(trackId) {
+      async function getTrackInfo() {
         try{
           const accessToken = await getAccessToken();
         
@@ -64,75 +66,75 @@ const client = new cassandra.Client({
           
             await client.execute(query, params, { prepare: true });
           }
-          res.status(201).send("Songs updated.");
+
         } catch (error) {
-          res.status(500).send('Error trying to initialize the songs.');
+          throw new ServerError("Error trying to initialize the songs.", 500);
         }
       }      
-      getTrackInfo() 
+      const result = getTrackInfo(); 
+      return result;
     }
 
-    async getAll(req, res){
+    async getAll(){
       try{
-        const result =  await client.execute("SELECT * FROM songs;");
-        
+        const result =  await client.execute("SELECT * FROM songs;"); 
         if (result.rowLength > 0) {
-          res.status(200).json(result.rows);
+            return result.rows;
         } else {
-          res.status(500).send(`There are no songs to get.`);
+          throw new ServerError("There are no songs to get.", 500);
         }
-  
-      }catch (error){
-        console.error(error);
-        res.status(500).send('Error trying to get the songs.');
+      }catch(error){
+        if(error instanceof ServerError){
+          throw error;
+        }
+        throw new ServerError("Error trying to get the songs.", 500);
       }
+
     }
     
-    async getById(req, res){
+    async getById(idSong){
+      var result;
       try{
-        const idSong = req.params.id_song;
-        const result = await client.execute("SELECT * FROM songs WHERE id_song = ?", [idSong]);
-  
+        result = await client.execute("SELECT * FROM songs WHERE id_song = ?", [idSong]);
         if (result.rowLength > 0) {
-          res.status(200).json(result.rows);
+          return result.rows;
         } else {
-          res.status(404).send(`Song not found.`);
+          throw new ServerError("Song not found.", 404);
         }
-   
       }catch (error){
-        console.log(error);
-        res.status(500).send('Error trying to get the song.');
+        if(error instanceof ServerError){
+          throw error;
+        }
+        throw new ServerError("Error trying to get the song.", 500);
       }
     }
-  
-    async createSong(req, res){
+      
+    async createSong(id_song, album, artist, duration, genres, title, year){
       try{
-        const {id_song, album, artist, duration, genres, title, year} = req.body;
-  
         const result = await client.execute(
           "INSERT INTO songs (id_song, album, artist, duration, genres, title, year) VALUES (?, ?, ?, ?, ?, ?, ?)",
           [id_song, album, artist, duration, genres, title, year], { prepare: true }
-        );
-        
-        if (result.info.queriedHost) {
-          res.status(201).send(`id: ${id_song}`);
-        } else {
-          res.status(400).send('Guard failed.');
-        }
+          );
+          if (result.info.queriedHost) {
+            return result;
+          } else {
+            throw new ServerError("Guard failed.", 400);
+          }
       }catch (error) {
-        res.status(500).send('Error trying to create the song.');
+        if(error instanceof ServerError){
+          throw error;
+        }
+        throw new ServerError("Error trying to create the song.", 500);
       }
+        
     }
   
-    async updateSong(req, res){
-      try{
-        const idSong = req.params.id_song;
-        const {album, artist, duration, genres, title, year} = req.body;
-  
+    async updateSong(idSong, album, artist, duration, genres, title, year){
+      try{  
         const resultId = await client.execute("SELECT id_song FROM songs WHERE id_song = ?", [idSong]);
         
         if (resultId.rowLength == 0) {
-          return res.status(404).send(`Song not found.`);
+          throw new ServerError("Song not found.", 404);
         }
 
         let updateQuery = "UPDATE songs SET";
@@ -170,39 +172,40 @@ const client = new cassandra.Client({
         const result = await client.execute(updateQuery, updateValues, { prepare: true });
   
         if (result.info.queriedHost) {
-          res.status(201).send(`Song updated.`);
+          return result;
         } else {
-          res.status(400).send(`Guard failed.`);
+          throw new ServerError("Guard failed.", 400);
         }
       }catch(error){
-        res.status(500).send('Error trying to update the song.');
+        //console.error(error);
+        if(error instanceof ServerError){
+          throw error;
+        }
+        throw new ServerError("Error trying to update the song.", 500);
       }
     }
   
-    async deleteSong(req, res){
+    async deleteSong(idSong){
       try{
-        const idSong = req.params.id_song;
-
         const resultId = await client.execute("SELECT id_song FROM songs WHERE id_song = ?", [idSong]);
         
         if (resultId.rowLength == 0) {
-          return res.status(404).send(`Song not found.`);
+          throw new ServerError(`Song not found.`, 404);
         }
 
         const result = await client.execute("DELETE FROM songs WHERE id_song = ?", [idSong]);
   
         if (result.info.queriedHost) {
-          res.status(204).send();
+          return result;
         } else {
-          res.status(400).send(`Guard failed.`);
+          throw new ServerError("Guard failed.", 400);
         }
       }catch (error) {
-        res.status(500).send('Error trying to delete the song.');
+        if(error instanceof ServerError){
+          throw error;
+        }
+        throw new ServerError("Error trying to delete the song.", 500);
       }
-    }
-  
-    async idError(req, res){
-      res.status(400).send("Id not provided.");
     }
   }
   module.exports = new SongServices();

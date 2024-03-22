@@ -1,25 +1,17 @@
-const cassandra = require('cassandra-driver');
-
 var express = require('express'),
     router = express.Router();
 
-const movieServices = require("../services/movies.services")
+const movieControllers = require('../controllers/movies.controllers');
+const asyncErrorMiddleware = require('../middlewares/asyncError.middleware');
 
-const client = new cassandra.Client({
-  contactPoints: [process.env.CASSANDRA_CONTACT_POINTS],
-  localDataCenter: process.env.CASSANDRA_LOCAL_DATA_CENTER,
-  keyspace: process.env.CASSANDRA_KEYSPACE,
-  authProvider: new cassandra.auth.PlainTextAuthProvider(process.env.CASSANDRA_USERNAME, process.env.CASSANDRA_PASSWORD),
-});
-
-router.get("/init", movieServices.initializeMovies);
-router.get('/', movieServices.getAll);
-router.get("/:id_movie", movieServices.getById);
-router.post("/", movieServices.createMovie);
-router.put("/:id_movie", movieServices.updateMovie);
-router.put("/", movieServices.idError);
-router.delete("/:id_movie", movieServices.deleteMovie);
-router.delete("/", movieServices.idError);
+router.route("/init").get(asyncErrorMiddleware(movieControllers.initializeMovies));
+router.route('/').get(asyncErrorMiddleware(movieControllers.getAllMovies));
+router.route("/:id_movie").get(asyncErrorMiddleware(movieControllers.getById));
+router.route("/").post(asyncErrorMiddleware(movieControllers.createMovie));
+router.route("/:id_movie").put(asyncErrorMiddleware(movieControllers.updateMovie));
+router.route("/").put(asyncErrorMiddleware(movieControllers.idError));
+router.route("/:id_movie").delete(asyncErrorMiddleware(movieControllers.deleteMovie));
+router.route("/").delete(asyncErrorMiddleware(movieControllers.idError));
 
 
 module.exports = router;
