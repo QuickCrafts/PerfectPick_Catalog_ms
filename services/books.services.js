@@ -14,17 +14,20 @@ const client = new cassandra.Client({
 class BookServices {
   async initializeBooks(){
     const apiKey = process.env.API_KEY_GOOGLE_BOOKS;
+    const genres = ["Crónica", "Epístola", "Novela"];
+
+
     try {
       const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=cronica&maxResults=40&key=${apiKey}`);
 
       const formattedBooks = response.data.items.map(book => ({
         id_book: book.id,
         title: book.volumeInfo.title,
-        author: book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : null,
+        author: book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : "Autor desconocido",
         year: book.volumeInfo.publishedDate ? new Date(book.volumeInfo.publishedDate).getFullYear() : null,
-        rating: book.volumeInfo.averageRating || null,
-        genres: book.volumeInfo.categories ? book.volumeInfo.categories.join(', ') : null,
-        pages: book.volumeInfo.pageCount || null,
+        rating: ((Math.floor(Math.random() * 9) / 2) + 1), //book.volumeInfo.averageRating
+        genres: book.volumeInfo.categories ? book.volumeInfo.categories.join(', ') : genres[(Math.floor(Math.random() * 3))],
+        pages: book.volumeInfo.pageCount || (Math.floor(Math.random() * 254)),
       }));
 
       for (const book of formattedBooks) {

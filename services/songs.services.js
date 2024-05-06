@@ -42,8 +42,8 @@ const client = new cassandra.Client({
         
           const filteredTracks = [];
           const items = response.data.tracks.items;
-
-
+          const genres = ["R&B", "Pop", "Indie", "Alternative"];
+          
           for (let i = 0; i < items.length; i++) {
             const track = items[i].track;
             const filteredTrack = {
@@ -51,8 +51,9 @@ const client = new cassandra.Client({
               album: track.album.name,
               artist: track.artists.map(artist => artist.name).join(', '),
               duration: Math.round(track.duration_ms/1000),
-              genres: track.artists.genres, 
+              genres: genres[(Math.floor(Math.random() * 5))] || "Alternative", //track.artists.genres, 
               title: track.name,
+              rating: ((Math.floor(Math.random() * 9) / 2) + 1),
               year: new Date(track.album.release_date).getFullYear(),
             };
 
@@ -60,9 +61,9 @@ const client = new cassandra.Client({
           }
 
           for (const song of filteredTracks) {
-            const { id_song, album, artist, duration, genres, title, year} = song;
-            const query = 'INSERT INTO songs (id_song, album, artist, duration, genres, title, year) VALUES (?, ?, ?, ?, ?, ?, ?)';
-            const params = [id_song, album, artist, duration, genres, title, year];
+            const { id_song, album, artist, duration, genres, title, rating, year} = song;
+            const query = 'INSERT INTO songs (id_song, album, artist, duration, genres, title, rating, year) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+            const params = [id_song, album, artist, duration, genres, title, rating, year];
           
             await client.execute(query, params, { prepare: true });
           }
@@ -109,11 +110,11 @@ const client = new cassandra.Client({
       }
     }
       
-    async createSong(id_song, album, artist, duration, genres, title, year){
+    async createSong(id_song, album, artist, duration, genres, title, rating, year){
       try{
         const result = await client.execute(
-          "INSERT INTO songs (id_song, album, artist, duration, genres, title, year) VALUES (?, ?, ?, ?, ?, ?, ?)",
-          [id_song, album, artist, duration, genres, title, year], { prepare: true }
+          "INSERT INTO songs (id_song, album, artist, duration, genres, title, rating, year) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+          [id_song, album, artist, duration, genres, title, rating, year], { prepare: true }
           );
           if (result.info.queriedHost) {
             return result;
@@ -129,7 +130,7 @@ const client = new cassandra.Client({
         
     }
   
-    async updateSong(idSong, album, artist, duration, genres, title, year){
+    async updateSong(idSong, album, artist, duration, genres, title, rating, year){
       try{  
         const resultId = await client.execute("SELECT id_song FROM songs WHERE id_song = ?", [idSong]);
         
@@ -159,6 +160,10 @@ const client = new cassandra.Client({
         if (title !== undefined) {
           updateQuery += " title = ?,";
           updateValues.push(title);
+        }
+        if (rating !== undefined) {
+          updateQuery += " rating = ?,";
+          updateValues.push(rating);
         }
         if (year !== undefined) {
           updateQuery += " year = ?,";

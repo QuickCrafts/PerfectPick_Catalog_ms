@@ -17,14 +17,14 @@ class SongsController {
     }
 
     async createSong(req, res){
-        const {id_song, album, artist, duration, genres, title, year} = req.body;
-        const result = await songServices.createSong(id_song, album, artist, duration, genres, title, year);
+        const {id_song, album, artist, duration, genres, title, rating, year} = req.body;
+        const result = await songServices.createSong(id_song, album, artist, duration, genres, title, rating, year);
         res.status(201).send(`id: ${id_song}`);
     }
 
     async updateSong(req, res){
-        const {album, artist, duration, genres, title, year} = req.body;
-        const result = await songServices.updateSong(req.params.id_song, album, artist, duration, genres, title, year);
+        const {album, artist, duration, genres, title, rating, year} = req.body;
+        const result = await songServices.updateSong(req.params.id_song, album, artist, duration, genres, title, rating, year);
         res.status(201).send(`Song updated.`);
     }
 

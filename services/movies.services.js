@@ -36,6 +36,7 @@ class MovieServices {
           }
 
           const limitedResults = allResults.slice(0, 100);
+          const episodesSeasonsForMovies = 1;
           const detailedMoviesPromises = allResults.map(async movie => {
             const detailsResponse = await fetch(baseUrl + `&i=${movie.imdbID}`);
             const detailsData = await detailsResponse.json();
@@ -50,10 +51,10 @@ class MovieServices {
               release_date: detailsData.Released,
               cast: detailsData.Actors,
               writers: detailsData.Writer,
-              seasons: detailsData.totalSeasons || null,  
-              episodes: detailsData.totalSeasons || null,  
+              seasons: episodesSeasonsForMovies, //detailsData.totalSeasons,  
+              episodes: episodesSeasonsForMovies, //detailsData.totalSeasons,  
               awards: detailsData.Awards,
-              rating: detailsData.imdbRating,
+              rating: detailsData.imdbRating / 2,
             };
           });
     
