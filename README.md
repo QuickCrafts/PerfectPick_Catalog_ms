@@ -25,13 +25,22 @@ interface Create_Movie{
   genre: string
   duration?: string
   director?: string
+<<<<<<< HEAD
+  release_date?: string
+=======
   release_date?: date
+>>>>>>> 20330c71f9bfd212159a4fb00513e4789b1d9d41
   cast?: string[]
   writers?: string[]
   seasons?: number
   episodes?: number
+<<<<<<< HEAD
+  awards?: number
+  rating?: number
+=======
   awards?: string
   rating?: decimal
+>>>>>>> 20330c71f9bfd212159a4fb00513e4789b1d9d41
   // any other movie/series important attribute
 }
 ```
@@ -125,6 +134,10 @@ Get movie.
 | :-------- | :------- | :------------------------- |
 | `200` | `success` | Return Movie JSON|
 | `400` | `error` | "Guard failed" |
+<<<<<<< HEAD
+| `400` | `error` | "Id not provided" |
+=======
+>>>>>>> 20330c71f9bfd212159a4fb00513e4789b1d9d41
 | `404` | `error` | "Movie not found" |
 | `500` | `error` | Any other error message|
 
@@ -164,7 +177,11 @@ interface Response_Get_Movies{
 
 #### Initialization and update of movies
 
+<<<<<<< HEAD
+Get movies information from [IMDB API](https://developer.imdb.com/documentation/api-documentation/getting-access/) to init PerfectPick movies database or to update with new missing movies.
+=======
 Get movies information from [OMDB API](https://www.omdbapi.com) to init PerfectPick movies database or to update with new missing movies.
+>>>>>>> 20330c71f9bfd212159a4fb00513e4789b1d9d41
 
 ```http
   PUT /movies/init
@@ -193,8 +210,13 @@ interface Create_Book{
   author: string
   genre: string
   pages?: number
+<<<<<<< HEAD
+  year?: string
+  rating?: number
+=======
   year?: number
   rating?: decimal
+>>>>>>> 20330c71f9bfd212159a4fb00513e4789b1d9d41
   // any other book important attribute
 }
 ```
@@ -282,6 +304,10 @@ Get book.
 | :-------- | :------- | :------------------------- |
 | `200` | `success` | Return book JSON|
 | `400` | `error` | "Guard failed" |
+<<<<<<< HEAD
+| `400` | `error` | "Id not provided" |
+=======
+>>>>>>> 20330c71f9bfd212159a4fb00513e4789b1d9d41
 | `404` | `error` | "Book not found" |
 | `500` | `error` | Any other error message|
 
@@ -321,7 +347,11 @@ interface Response_Get_Books{
 
 #### Initialization and update of books
 
+<<<<<<< HEAD
+Get books information from [Goodreads API](https://www.goodreads.com/api) to init PerfectPick books database or to update with new missing books.
+=======
 Get books information from [Google Libros API](https://developers.google.com/books/docs/v1/using) to init PerfectPick books database or to update with new missing books.
+>>>>>>> 20330c71f9bfd212159a4fb00513e4789b1d9d41
 
 ```http
   PUT /books/init
@@ -348,8 +378,13 @@ interface Create_Song{
   title: string
   artist: string
   genre: string
+<<<<<<< HEAD
+  album?: number
+  year?: string
+=======
   album?: string
   year?: number
+>>>>>>> 20330c71f9bfd212159a4fb00513e4789b1d9d41
   duration?: number
   // any other song important attribute
 }

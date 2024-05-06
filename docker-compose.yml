@@ -1,0 +1,24 @@
+
+services:
+  perfectpick_catalog_db:
+    image: cassandra
+    container_name: perfectpick_catalog_db
+    ports:
+      - "9842:9842"
+    networks:
+      - perfectpicknetwork
+
+  perfectpick_catalog_ms:
+    build: ./perfectpick_catalog_ms # to build all services
+    # build: ./ to build the image from the Dockerfile in the current directory
+    container_name: perfectpick_catalog_ms
+    ports:
+      - "8001:8001"
+    depends_on:
+      - perfectpick_catalog_db
+    networks:
+      - perfectpicknetwork
+
+networks:
+  perfectpicknetwork:
+    external: true
